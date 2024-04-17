@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SPA avec Django et Hashchange</title>
+    <link rel="stylesheet" href="{% static 'CSS/style.css'%}">
+    <script>
+  window.addEventListener('hashchange', function() {
+    var hash = location.hash;
+    var content = document.getElementById('content');
+    var url = '';
+
+    switch(hash) {
+        case '#sect1':
+            url = 'sect1/';
+            break;
+        case '#sect2':
+            url = 'sect2/';
+            break;
+        case '#sect3':
+            url = 'sect3/';
+            break;
+        default:
+            url = 'accueil/';
+    }
+
+    // Utiliser AJAX pour récupérer le contenu
+    var xhr = new XMLHttpRequest();
+    console.log("URL " + url);
+    xhr.open('GET', url, true);
+    xhr.onload = function() 
+    {
+        if (this.status >= 200 && this.status < 400) {
+            // Insérer le contenu récupéré dans l'élément 'content'
+            content.innerHTML = this.responseText;
+        } else {
+            // Gérer les erreurs
+            content.innerHTML = 'Erreur lors du chargement de la section.';
+        }
+    };
+    xhr.onerror = function() {
+        // Gérer les erreurs de réseau
+        content.innerHTML = 'Erreur de réseau.';
+    };
+    xhr.send();
+    // Modifier l'URL sans recharger la page
+    var currentUrl = new URL(window.location.href);
+    currentUrl.hash = hash; // Mettre à jour le hash
+    history.replaceState(null, null, currentUrl.href); // Modifier l'URL sans recharger la page
+});
+    </script>
+</head>
+<body>
+    <h1>Welcome to the game, petit padawan...</h1>
+    <nav class="buttons">
+        <a href="#sect1">Section 1</a>
+        <a href="#sect2">Section 2</a>
+        <a href="#sect3">Section 3</a>
+    </nav>
+    <div id="content">
+        <!-- Le contenu sera chargé ici -->
+    </div>
+</body>
+</html>
